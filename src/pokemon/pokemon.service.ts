@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -13,6 +8,8 @@ import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 
 import { Pokemon } from './entities/pokemon.entity';
+
+import { handleExceptions } from '../utils/handlers.util';
 
 @Injectable()
 export class PokemonService {
@@ -29,7 +26,7 @@ export class PokemonService {
       const pokemon = await this.pokemonModel.create(createPokemonDto);
       return pokemon;
     } catch (error) {
-      this.handleExceptions(error);
+      handleExceptions(error);
     }
   }
 
@@ -68,22 +65,13 @@ export class PokemonService {
         ...updatePokemonDto,
       }
     } catch (error) {
-      this.handleExceptions(error);
+      handleExceptions(error);
     }
   }
 
   async remove(id: string): Promise<void> {
     const { deletedCount } = await this.pokemonModel.deleteOne({ _id: id });
     if (deletedCount === 0) throw new BadRequestException(`Pokemon with id ${id} not found`);
-  }
-
-  private handleExceptions(error: any): void {
-    if (error.code === 11000) {
-      throw new BadRequestException(`Pokemon exists in db ${JSON.stringify(error.keyValue)}`);
-    }
-
-    console.log(error);
-    throw new InternalServerErrorException(`Can't create Pokemon - Check server logs`);
   }
 
 }
