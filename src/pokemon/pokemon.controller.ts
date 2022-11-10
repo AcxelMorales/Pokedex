@@ -25,9 +25,12 @@ export class PokemonController {
     return this.pokemonService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.pokemonService.findOne(+id);
+  @Get(':term')
+  async findOne(@Param('term') term: string): Promise<IResponse> {
+    return {
+      status: 200,
+      data: await this.pokemonService.findOne(term),
+    };
   }
 
   @Patch(':id')
