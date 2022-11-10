@@ -6,12 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 
 import { PokemonService } from './pokemon.service';
 
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { PaginationDto } from 'src/common/dto/pagination.dto';
 
 import { IResponse } from './interfaces';
 
@@ -31,8 +33,11 @@ export class PokemonController {
   }
 
   @Get()
-  findAll() {
-    return this.pokemonService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto): Promise<IResponse> {
+    return {
+      status: 200,
+      data: await this.pokemonService.findAll(paginationDto),
+    };
   }
 
   @Get(':term')
