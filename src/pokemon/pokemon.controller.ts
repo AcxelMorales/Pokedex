@@ -5,14 +5,19 @@ import { PokemonService } from './pokemon.service';
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 
+import { IResponse } from './interfaces';
+
 @Controller('pokemon')
 export class PokemonController {
 
   constructor(private readonly pokemonService: PokemonService) {}
 
   @Post()
-  create(@Body() createPokemonDto: CreatePokemonDto) {
-    return this.pokemonService.create(createPokemonDto);
+  async create(@Body() createPokemonDto: CreatePokemonDto): Promise<IResponse> {
+    return {
+      status: 201,
+      data: await this.pokemonService.create(createPokemonDto),
+    }
   }
 
   @Get()
