@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { InjectModel } from '@nestjs/mongoose';
 
@@ -6,6 +10,7 @@ import { isValidObjectId, Model } from 'mongoose';
 
 import { CreatePokemonDto } from './dto/create-pokemon.dto';
 import { UpdatePokemonDto } from './dto/update-pokemon.dto';
+import { PaginationDto } from '../common/dto/pagination.dto';
 
 import { Pokemon } from './entities/pokemon.entity';
 
@@ -30,8 +35,13 @@ export class PokemonService {
     }
   }
 
-  findAll() {
-    return `This action returns all pokemon`;
+  async findAll({ limit, offset }: PaginationDto): Promise<Pokemon[]> {
+    return await this.pokemonModel
+      .find()
+      .limit(limit)
+      .skip(offset)
+      .sort({ no: 1 })
+      .select('-__v');
   }
 
   async findOne(term: string): Promise<Pokemon> {
@@ -42,7 +52,9 @@ export class PokemonService {
     } else if (isValidObjectId(term)) {
       pokemon = await this.pokemonModel.findById(term);
     } else {
-      pokemon = await this.pokemonModel.findOne({ name: term.toLocaleLowerCase() })
+      pokemon = await this.pokemonModel.findOne({
+        name: term.toLocaleLowerCase(),
+      });
     }
 
     if (!pokemon) throw new NotFoundException(`Pokemon with id, name or no "${term}" not found`);
@@ -63,7 +75,7 @@ export class PokemonService {
       return {
         ...pokemon.toJSON(),
         ...updatePokemonDto,
-      }
+      };
     } catch (error) {
       handleExceptions(error);
     }
