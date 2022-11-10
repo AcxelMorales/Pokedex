@@ -53,8 +53,13 @@ export class PokemonController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pokemonService.remove(+id);
+  async remove(@Param('id') id: string): Promise<IResponse> {
+    await this.pokemonService.remove(id);
+
+    return {
+      status: 200,
+      data: 'Pokemon deleted',
+    };
   }
 
 }
