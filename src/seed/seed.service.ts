@@ -20,7 +20,6 @@ export class SeedService {
   ) {}
 
   async executeSeed(): Promise<IPokemonResult[]> {
-    //TODO Se agrego limpieza de la base de datos
     await this.pokemonModel.deleteMany();
 
     const { data: { results } } = await this.axios.get<IPokemonData>('https://pokeapi.co/api/v2/pokemon?limit=10');
