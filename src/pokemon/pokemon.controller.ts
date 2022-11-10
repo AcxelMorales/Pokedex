@@ -15,6 +15,8 @@ import { UpdatePokemonDto } from './dto/update-pokemon.dto';
 
 import { IResponse } from './interfaces';
 
+import { ParseMongoIdPipe } from '../common/pipes/parse-mongo-id/parse-mongo-id.pipe';
+
 @Controller('pokemon')
 export class PokemonController {
 
@@ -53,8 +55,13 @@ export class PokemonController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.pokemonService.remove(+id);
+  async remove(@Param('id', ParseMongoIdPipe) id: string): Promise<IResponse> {
+    await this.pokemonService.remove(id);
+
+    return {
+      status: 200,
+      data: 'Pokemon deleted',
+    };
   }
 
 }
