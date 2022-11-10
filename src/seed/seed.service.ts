@@ -9,8 +9,6 @@ import { IPokemonResult, IPokemonData } from './interfaces';
 
 import { Pokemon } from '../pokemon/entities/pokemon.entity';
 
-import { handleExceptions } from '../utils/handlers.util';
-
 @Injectable()
 export class SeedService {
 
@@ -27,16 +25,15 @@ export class SeedService {
 
     const { data: { results } } = await this.axios.get<IPokemonData>('https://pokeapi.co/api/v2/pokemon?limit=10');
 
-    results.forEach(async ({ name, url }) => {
+    const pokemonToInsert: { name: string, no: number }[] = [];
+
+    results.forEach(({ name, url }) => {
       const segments: string[] = url.split('/');
       const no: number = +segments[segments.length - 2];
-
-      try {
-        await this.pokemonModel.create({ name, no });
-      } catch (error) {
-        handleExceptions(error);
-      }
+      pokemonToInsert.push({ name, no })
     });
+
+    await this.pokemonModel.insertMany(pokemonToInsert);
 
     return results;
   }

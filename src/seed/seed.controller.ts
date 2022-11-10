@@ -11,9 +11,11 @@ export class SeedController {
 
   @Get()
   async executeSeed(): Promise<IResponse> {
+    await this.seedService.executeSeed();
+
     return {
       status: 200,
-      data: await this.seedService.executeSeed(),
+      data: 'Executed seed',
     };
   }
 
