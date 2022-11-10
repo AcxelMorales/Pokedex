@@ -8,7 +8,7 @@ export class SeedController {
   constructor(private readonly seedService: SeedService) {}
 
   @Get()
-  executeSeed() {
+  async executeSeed(): Promise<Object> {
     return this.seedService.executeSeed();
   }
 
