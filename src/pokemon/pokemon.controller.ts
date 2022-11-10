@@ -15,7 +15,7 @@ export class PokemonController {
   @Post()
   async create(@Body() createPokemonDto: CreatePokemonDto): Promise<IResponse> {
     return {
-      status: 200,
+      status: 201,
       data: await this.pokemonService.create(createPokemonDto),
     }
   }
