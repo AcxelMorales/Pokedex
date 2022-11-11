@@ -22,8 +22,8 @@ export class SeedService {
     private readonly http: AxiosAdapter,
     private readonly configService: ConfigService,
   ) {
-    this.urlApi = this.configService.get('API_POKEMON');
-    this.limit = this.configService.get('DEFAULT_LIMIT');
+    this.urlApi = this.configService.get<string>('API_POKEMON');
+    this.limit = this.configService.get<number>('DEFAULT_LIMIT');
   }
 
   async executeSeed(): Promise<IPokemonResult[]> {
