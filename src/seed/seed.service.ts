@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { ConfigService } from '@nestjs/config';
 
 import { Model } from 'mongoose';
 
@@ -12,16 +13,23 @@ import { AxiosAdapter } from '../common/adapters/axios.adapter';
 @Injectable()
 export class SeedService {
 
+  private urlApi: string;
+  private limit: number;
+
   constructor(
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
     private readonly http: AxiosAdapter,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.urlApi = this.configService.get('API_POKEMON');
+    this.limit = this.configService.get('DEFAULT_LIMIT');
+  }
 
   async executeSeed(): Promise<IPokemonResult[]> {
     await this.pokemonModel.deleteMany();
 
-    const { results } = await this.http.get<IPokemonData>('https://pokeapi.co/api/v2/pokemon?limit=10');
+    const { results } = await this.http.get<IPokemonData>(`${this.urlApi}?limit=${this.limit}`);
 
     const pokemonToInsert: { name: string, no: number }[] = [];
 
