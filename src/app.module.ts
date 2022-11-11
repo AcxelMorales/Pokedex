@@ -11,6 +11,7 @@ import { CommonModule } from './common/common.module';
 import { SeedModule } from './seed/seed.module';
 
 import { EnvConfiguration } from './config/env.config';
+import { JoiValidationSchema } from './config/joi.validation';
 
 @Module({
   imports: [
@@ -18,12 +19,13 @@ import { EnvConfiguration } from './config/env.config';
       rootPath: join(__dirname, '..', 'public'),
     }),
     ConfigModule.forRoot({
-      load: [EnvConfiguration]
+      load: [EnvConfiguration],
+      validationSchema: JoiValidationSchema,
     }),
     MongooseModule.forRoot(process.env.MONGO_DB),
     PokemonModule,
     CommonModule,
-    SeedModule
+    SeedModule,
   ],
 })
 export class AppModule {}
