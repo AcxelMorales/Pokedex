@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ConfigService } from '@nestjs/config';
 
@@ -9,6 +9,8 @@ import { IPokemonResult, IPokemonData } from './interfaces';
 import { Pokemon } from '../pokemon/entities/pokemon.entity';
 
 import { AxiosAdapter } from '../common/adapters/axios.adapter';
+
+import { LoggerService, Types } from '../log/logger.service';
 
 @Injectable()
 export class SeedService {
@@ -21,6 +23,7 @@ export class SeedService {
     private readonly pokemonModel: Model<Pokemon>,
     private readonly http: AxiosAdapter,
     private readonly configService: ConfigService,
+    private readonly loggerService: LoggerService,
   ) {
     this.urlApi = this.configService.get<string>('API_POKEMON');
     this.limit = this.configService.get<number>('DEFAULT_LIMIT');
@@ -40,6 +43,21 @@ export class SeedService {
     });
 
     await this.pokemonModel.insertMany(pokemonToInsert);
+
+    const json = {
+      nombre: 'Acxel',
+      edad: 25,
+      casado: false,
+      comidaFavorita: {
+        desayuno: 'Hotcackes',
+        comida: 'Chilaquiles',
+        cena: 'Pan de dulce'
+      },
+    };
+
+    this.loggerService.writeLog(`Se han creado ${this.limit} pokemones`, 'SeedService', Types.debug);
+
+    this.loggerService.writeLog(JSON.stringify(json), 'SeedService', Types.log);
 
     return results;
   }
