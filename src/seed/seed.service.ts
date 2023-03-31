@@ -44,20 +44,11 @@ export class SeedService {
 
     await this.pokemonModel.insertMany(pokemonToInsert);
 
-    const json = {
-      nombre: 'Acxel',
-      edad: 25,
-      casado: false,
-      comidaFavorita: {
-        desayuno: 'Hotcackes',
-        comida: 'Chilaquiles',
-        cena: 'Pan de dulce'
-      },
-    };
-
-    this.loggerService.writeLog(`Se han creado ${this.limit} pokemones`, 'SeedService', Types.debug);
-
-    this.loggerService.writeLog(JSON.stringify(json), 'SeedService', Types.log);
+    this.loggerService.writeLog(
+      `Se han creado ${this.limit} pokemones`,
+      'SeedService',
+      Types.debug
+    );
 
     return results;
   }

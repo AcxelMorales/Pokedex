@@ -16,12 +16,15 @@ import { Pokemon } from './entities/pokemon.entity';
 
 import { handleExceptions } from '../utils/handlers.util';
 
+import { LoggerService, Types } from '../log/logger.service';
+
 @Injectable()
 export class PokemonService {
 
   constructor(
     @InjectModel(Pokemon.name)
     private readonly pokemonModel: Model<Pokemon>,
+    private readonly loggerService: LoggerService,
   ) {}
 
   async create(createPokemonDto: CreatePokemonDto): Promise<Pokemon> {
@@ -29,6 +32,13 @@ export class PokemonService {
 
     try {
       const pokemon = await this.pokemonModel.create(createPokemonDto);
+
+      this.loggerService.writeLog(
+        `Se creo un pokemon: ${JSON.stringify(createPokemonDto)}`,
+        'PokemonService',
+        Types.debug
+      );
+
       return pokemon;
     } catch (error) {
       handleExceptions(error);
@@ -36,6 +46,12 @@ export class PokemonService {
   }
 
   async findAll({ limit, offset }: PaginationDto): Promise<Pokemon[]> {
+    this.loggerService.writeLog(
+      `Se obtuvieron todos los pokemones`,
+      'PokemonService',
+      Types.debug
+    );
+
     return await this.pokemonModel
       .find()
       .limit(limit)
@@ -59,6 +75,12 @@ export class PokemonService {
 
     if (!pokemon) throw new NotFoundException(`Pokemon with id, name or no "${term}" not found`);
 
+    this.loggerService.writeLog(
+      `Se obtuvo un pokemon: ${JSON.stringify(pokemon)}`,
+      'PokemonService',
+      Types.debug
+    );
+
     return pokemon;
   }
 
@@ -72,6 +94,12 @@ export class PokemonService {
     try {
       await pokemon.updateOne(updatePokemonDto);
 
+      this.loggerService.writeLog(
+        `Se actualizo un pokemon: ${JSON.stringify(updatePokemonDto)}`,
+        'PokemonService',
+        Types.debug
+      );
+
       return {
         ...pokemon.toJSON(),
         ...updatePokemonDto,
@@ -84,6 +112,12 @@ export class PokemonService {
   async remove(id: string): Promise<void> {
     const { deletedCount } = await this.pokemonModel.deleteOne({ _id: id });
     if (deletedCount === 0) throw new BadRequestException(`Pokemon with id ${id} not found`);
+
+    this.loggerService.writeLog(
+      `Se elimino un pokemon con el ID: ${id}`,
+      'PokemonService',
+      Types.debug
+    );
   }
 
 }
